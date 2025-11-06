@@ -1,0 +1,157 @@
+<odoo>
+    <record id="view_caille_production_tree" model="ir.ui.view">
+        <field name="name">caille.production.tree</field>
+        <field name="model">caille.production</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="date_production"/>
+                <field name="type_production"/>
+                <field name="production_nette"/>
+                <field name="stock_oeufs_global" string="Stock Œufs"/>
+                <field name="stock_viande_global" string="Stock Viande"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_caille_production_form" model="ir.ui.view">
+        <field name="name">caille.production.form</field>
+        <field name="model">caille.production</field>
+        <field name="arch" type="xml">
+            <form string="production de caille">
+                 <header>
+                    <field name="type_production" widget="radio" options="{'horizontal': true}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="date_production"/>
+                        </group>
+                        <group>
+                            <field name="production_nette" readonly="1"
+                                   string="Production Nette"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="📦 Production Ponte" invisible="type_production != 'ponte'">
+                            <group>
+                                <group string="Œufs Pondus">
+                                    <field name="nbr_oeuf_pondus"/>
+                                    <field name="nbr_oeuf_eclors"/>
+                                    <field name="nbr_oeuf_casses"/>
+                                </group>
+                                <group string="Stocks Globaux">
+                                    <field name="stock_oeufs_global" readonly="1"
+                                           class="oe_read_only"/>
+                                    <label for="stock_oeufs_global"
+                                           string="Stock total d'œufs disponibles"/>
+                                </group>
+                            </group>
+                        </page>
+                         <page string="🍗 Production Viande" invisible="type_production != 'viande'">
+                            <group>
+                                <group string="Cailles">
+                                    <field name="nbr_cailles_abattu"/>
+                                    <field name="mort"/>
+                                </group>
+                                <group string="Stocks Globaux">
+                                    <field name="stock_viande_global" readonly="1"
+                                           class="oe_read_only"/>
+                                    <label for="stock_viande_global"
+                                           string="Stock total de viande disponible"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- Vue Kanban Production -->
+    <record id="view_caille_production_kanban" model="ir.ui.view">
+        <field name="name">caille.production.kanban</field>
+        <field name="model">caille.production</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="date_production"/>
+                <field name="type_production"/>
+                <field name="production_nette"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong><field name="name"/></strong>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <field name="date_production"/>
+                                </div>
+                                <div class="col-6 text-right">
+                                    <span class="badge badge-pill badge-info">
+                                        <field name="type_production"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    Production: <strong><field name="production_nette"/></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Recherche Production -->
+    <record id="view_caille_production_search" model="ir.ui.view">
+        <field name="name">caille.production.search</field>
+        <field name="model">caille.production</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher Productions">
+                <field name="name"/>
+                <field name="date_production"/>
+                <filter string="Ponte" name="ponte"
+                        domain="[('type_production', '=', 'ponte')]"/>
+                <filter string="Viande" name="viande"
+                        domain="[('type_production', '=', 'viande')]"/>
+                <separator/>
+                <filter string="Ce mois" name="ce_mois"
+                        domain="[('date_production', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                ('date_production', '&lt;=', (context_today() + relativedelta(day=31)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'type_production'}"/>
+                    <filter string="Date" name="group_date"
+                            context="{'group_by': 'date_production'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action Menu Production -->
+    <record id="action_caille_production" model="ir.actions.act_window">
+        <field name="name">Productions</field>
+        <field name="res_model">caille.production</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer une nouvelle production
+            </p>
+            <p>
+                Enregistrez vos productions d'œufs ou de viande de cailles.
+            </p>
+        </field>
+    </record>
+</odoo>

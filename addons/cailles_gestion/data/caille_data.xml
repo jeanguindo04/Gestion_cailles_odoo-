@@ -1,0 +1,20 @@
+<odoo>
+    <record id="sequence_caille_production" model="ir.sequence">
+        <field name="name">Numéro de Production</field>
+        <field name="code">caille.production</field>
+        <field name="prefix">PROD-</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+    </record>
+
+    <!-- Séquence pour Ventes -->
+    <record id="sequence_caille_ventes" model="ir.sequence">
+        <field name="name">Numéro de Vente</field>
+        <field name="code">caille.ventes</field>
+        <field name="prefix">VTE-</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+    </record>
+</odoo>

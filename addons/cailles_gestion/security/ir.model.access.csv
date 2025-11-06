@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_caille_ventes_manager,caille.lot.manager,model_caille_ventes,group_caille_manager,1,1,1,1
+access_caille_production_manager,caille.production.manager,model_caille_production,group_caille_manager,1,1,1,1
+access_caille_client_manager,caille.client.manager,model_caille_client,group_caille_manager,1,1,1,1

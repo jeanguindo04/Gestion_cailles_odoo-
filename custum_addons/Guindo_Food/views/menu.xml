@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_guindo_food_root"
+              name="Guindo Food"/>
+
+    <menuitem id="menu_guindo_food_clients"
+        name="Clients"
+        parent="menu_guindo_food_root"/>
+</odoo>

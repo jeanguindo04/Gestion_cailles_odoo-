@@ -1,0 +1,42 @@
+<odoo>
+    <record id="view_caille_client_tree" model="ir.ui.view">
+         <field name="name">caille.client.tree</field>
+            <field name="model">caille.client</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="nom_client"/>
+                    <field name="telephone_client"/>
+                    <field name="email_client"/>
+                </tree>
+            </field>
+    </record>
+
+    <record id="view_caille_client_form" model="ir.ui.view">
+        <field name="name">caille.client.form</field>
+            <field name="model">caille.client</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="nom_client" required="1"/>
+                            <field name="telephone_client" required="1"/>
+                            <field name="email_client"/>
+                            <field name="livraison"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+    </record>
+
+    <record id="action_caille_client" model="ir.actions.act_window">
+            <field name="name">Clients</field>
+            <field name="res_model">caille.client</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_caille_client_tree"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créer votre premier client
+                </p>
+            </field>
+    </record>
+</odoo>

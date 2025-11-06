@@ -1,0 +1,211 @@
+<odoo>
+    <record id="view_caille_ventes_tree"  model="ir.ui.view">
+        <field name="name">caille.ventes.tree</field>
+        <field name="model">caille.ventes</field>
+        <field name="arch" type="xml">
+            <tree string="Ventes de cailles" decoration-info="statut=='brouillon'" decoration-success="statut=='paye'" decoration-warning="statut=='confirme'" decoration-muted="statut=='annule'">
+                <field name="name"/>
+                <field name="date_ventes"/>
+                <field name="id_client"/>
+                <field name="produit_id"/>
+                <field name="quantite_vendus"/>
+                <field name="prix_unitaire" widget="monetary"/>
+                <field name="montant_total" widget="monetary" sum="Total"/>
+                <field name="statut" widget="badge" decoration-info="statut=='brouillon'" decoration-warning="statut=='confirme'" decoration-success="statut=='paye'" decoration-danger="statut=='annule'"/>
+                <field name="mode_de_paiement"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_caille_ventes_form" model="ir.ui.view">
+        <field name="name">caille.ventes.form</field>
+        <field name="model">caille.ventes</field>
+        <field name="arch" type="xml">
+            <form string="ventes de cailles">
+                <header>
+                    <button name="action_confirmer" string="Confirmer" type="object" class="oe_highlight" invisible="statut != 'brouillon'"/>
+                    <button name="action_payer" string="Marquer comme Payé" type="object" class="oe_highlight" invisible="statut not in ['brouillon', 'confirme']"/>
+                    <button name="action_annuler" string="Annuler" type="object" invisible="statut == 'paye'"/>
+                    <button name="action_remettre_en_brouillon" string="Remettre en brouillon" type="object" invisible="statut == 'brouillon'"/>
+                    <field name="statut" widget="statusbar" statusbar_visible="brouillon,confirme,paye"/>
+                </header>
+                <sheet>
+
+                     <field name="stock_apres_ventes" invisible="1"/>
+
+                     <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <!-- Alerte Stock -->
+                    <div class="alert alert-warning" role="alert"
+                         invisible="stock_apres_ventes &gt;= 0">
+                        <strong>⚠️ Attention !</strong> Stock insuffisant après cette vente.
+                    </div>
+
+                    <div class="alert alert-success" role="alert"
+                         invisible="statut != 'paye'">
+                        <strong>✅ Vente payée</strong> - Cette vente a été payée avec succès.
+                    </div>
+
+                    <group>
+                        <group string="Informations Client">
+                            <field name="date_ventes"/>
+                            <field name="id_client" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Produit">
+                            <field name="produit_id" widget="radio"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Quantités et Prix">
+                            <field name="quantite_vendus"/>
+                            <field name="prix_unitaire" widget="monetary"/>
+                            <field name="montant_total" widget="monetary" readonly="1"
+                                   class="oe_subtotal_footer_separator"/>
+                        </group>
+                        <group string="📊 Stocks">
+                            <field name="stock_total" readonly="1"/>
+                            <field name="stock_apres_ventes" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Paiement">
+                            <field name="mode_de_paiement" required="statut in ['confirme', 'paye']"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+     <!-- Vue Kanban Ventes -->
+    <record id="view_caille_ventes_kanban" model="ir.ui.view">
+        <field name="name">caille.ventes.kanban</field>
+        <field name="model">caille.ventes</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="statut">
+                <field name="name"/>
+                <field name="date_ventes"/>
+                <field name="id_client"/>
+                <field name="produit_id"/>
+                <field name="montant_total"/>
+                <field name="mode_de_paiement"/>
+                <field name="statut"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong><field name="name"/></strong>
+                                    <span class="float-right">
+                                        <field name="montant_total" widget="monetary"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <field name="id_client"/>
+                                </div>
+                                <div class="col-6 text-right">
+                                    <field name="date_ventes"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <span class="badge badge-pill badge-secondary">
+                                        <field name="produit_id"/>
+                                    </span>
+                                </div>
+                                <div class="col-6 text-right">
+                                    <field name="statut" widget="label_selection" options="{'classes': {'brouillon': 'default', 'confirme': 'warning', 'paye': 'success', 'annule': 'danger'}}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Pivot Ventes (Analyse) -->
+    <record id="view_caille_ventes_pivot" model="ir.ui.view">
+        <field name="name">caille.ventes.pivot</field>
+        <field name="model">caille.ventes</field>
+        <field name="arch" type="xml">
+            <pivot string="Analyse des Ventes">
+                <field name="date_ventes" type="row" interval="month"/>
+                <field name="produit_id" type="col"/>
+                <field name="montant_total" type="measure"/>
+                <field name="quantite_vendus" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Vue Graphique Ventes -->
+    <record id="view_caille_ventes_graph" model="ir.ui.view">
+        <field name="name">caille.ventes.graph</field>
+        <field name="model">caille.ventes</field>
+        <field name="arch" type="xml">
+            <graph string="Graphique des Ventes" type="bar">
+                <field name="date_ventes" interval="month"/>
+                <field name="montant_total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vue Recherche Ventes -->
+    <record id="view_caille_ventes_search" model="ir.ui.view">
+        <field name="name">caille.ventes.search</field>
+        <field name="model">caille.ventes</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher Ventes">
+                <field name="name"/>
+                <field name="id_client"/>
+                <field name="date_ventes"/>
+                <separator/>
+                <filter string="Brouillon" name="brouillon" domain="[('statut', '=', 'brouillon')]"/>
+                <filter string="Confirmé" name="confirme" domain="[('statut', '=', 'confirme')]"/>
+                <filter string="Payé" name="paye" domain="[('statut', '=', 'paye')]"/>
+                <filter string="Annulé" name="annule" domain="[('statut', '=', 'annule')]"/>
+                <separator/>
+                <filter string="Œufs" name="oeuf" domain="[('produit_id', '=', 'oeuf')]"/>
+                <filter string="Viande" name="viande" domain="[('produit_id', '=', 'viande')]"/>
+                <separator/>
+                <filter string="Aujourd'hui" name="aujourd_hui" domain="[('date_ventes', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Cette semaine" name="cette_semaine" domain="[('date_ventes', '&gt;=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Ce mois" name="ce_mois" domain="[('date_ventes', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),('date_ventes', '&lt;=', (context_today() + relativedelta(day=31)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Client" name="group_client" context="{'group_by': 'id_client'}"/>
+                    <filter string="Produit" name="group_produit" context="{'group_by': 'produit_id'}"/>
+                    <filter string="Statut" name="group_statut" context="{'group_by': 'statut'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'date_ventes'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action Menu Ventes -->
+    <record id="action_caille_ventes" model="ir.actions.act_window">
+        <field name="name">Ventes</field>
+        <field name="res_model">caille.ventes</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="context">{}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_caille_ventes_kanban')}),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('view_caille_ventes_tree')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('view_caille_ventes_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créer une nouvelle vente
+            </p>
+            <p>
+                Gérez vos ventes d'œufs et de viande de cailles.
+            </p>
+        </field>
+    </record>
+</odoo>

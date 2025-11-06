@@ -1,0 +1,56 @@
+<odoo>
+    <menuitem id="menu_caille_root" name="Cailles Ivoire" sequence="-1"/>
+    <menuitem id="menu_caille_ventes" name="Ventes" parent="menu_caille_root" sequence="20"/>
+    <menuitem id="menu_caille_ventes_list" name="Toutes les ventes" parent="menu_caille_ventes" action="action_caille_ventes" sequence="20"/>
+    <menuitem id="menu_caille_production" name="Productions" parent="menu_caille_root" sequence="10"/>
+    <menuitem id="menu_caille_production_list" name="Productions" parent="menu_caille_production" action="action_caille_production" sequence="10"/>
+    <menuitem id="menu_caille_ventes_client" name="Gestion des clients" parent="menu_caille_root" action="action_caille_client" sequence="30"/>
+     <!-- Sous-menus Ventes par statut -->
+    <record id="action_caille_ventes_brouillon" model="ir.actions.act_window">
+        <field name="name">Ventes en brouillon</field>
+        <field name="res_model">caille.ventes</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="context">{'search_default_brouillon': 1}</field>
+        <field name="domain">[('statut', '=', 'brouillon')]</field>
+    </record>
+
+    <record id="action_caille_ventes_confirme" model="ir.actions.act_window">
+        <field name="name">Ventes confirmées</field>
+        <field name="res_model">caille.ventes</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="context">{'search_default_confirme': 1}</field>
+        <field name="domain">[('statut', '=', 'confirme')]</field>
+    </record>
+
+    <record id="action_caille_ventes_paye" model="ir.actions.act_window">
+        <field name="name">Ventes payées</field>
+        <field name="res_model">caille.ventes</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="context">{'search_default_paye': 1}</field>
+        <field name="domain">[('statut', '=', 'paye')]</field>
+    </record>
+
+    <menuitem id="menu_caille_ventes_brouillon" name="Brouillons" parent="menu_caille_ventes" action="action_caille_ventes_brouillon" sequence="20"/>
+    <menuitem id="menu_caille_ventes_confirme" name="À payer" parent="menu_caille_ventes" action="action_caille_ventes_confirme" sequence="30"/>
+    <menuitem id="menu_caille_ventes_paye" name="Payées" parent="menu_caille_ventes" action="action_caille_ventes_paye" sequence="40"/>
+
+    <!-- Menu Rapports -->
+    <menuitem id="menu_caille_rapports" name="📊 Rapports" parent="menu_caille_root" action="action_caille_ventes_analyse" sequence="30"/>
+
+   <record id="action_caille_ventes_analyse" model="ir.actions.act_window">
+        <field name="name">Analyse des ventes</field>
+        <field name="res_model">caille.ventes</field>
+        <field name="view_mode">pivot,graph,tree</field>
+        <field name="domain">[('statut', 'in', ['confirme', 'paye'])]</field>
+        <field name="context">{'search_default_paye': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucune vente finalisée
+            </p>
+            <p>
+                Les analyses concerne uniquement les ventes payées.
+            </p>
+        </field>
+    </record>
+
+</odoo>
